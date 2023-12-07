@@ -6,26 +6,30 @@ enable_testing()
 option(BUILD_EXAMPLE "Builds the example" OFF)
 option(SILENCE_DEBUG_OUTPUT "Silence debugs" OFF)
 # Include directories for header files
-include_directories("${CMAKE_CURRENT_LIST_DIR}/Components/kdtree")
-include_directories("${CMAKE_CURRENT_LIST_DIR}/Components/reader")
-include_directories("${CMAKE_CURRENT_LIST_DIR}/Components/point")
-include_directories("${CMAKE_CURRENT_LIST_DIR}/Components/tester")
+include_directories("${CMAKE_CURRENT_LIST_DIR}/Components/KDTree")
+include_directories("${CMAKE_CURRENT_LIST_DIR}/Components/Reader")
+include_directories("${CMAKE_CURRENT_LIST_DIR}/Components/Vec3D")
+include_directories("${CMAKE_CURRENT_LIST_DIR}/Components/Tester")
 include_directories("${CMAKE_CURRENT_LIST_DIR}/Components/googleTest/include")
 
-# List source files for KDtree
-file(GLOB_RECURSE KDTREE_SRC CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/Components/kdtree/*.cpp")
-file(GLOB_RECURSE KDTREE_HEADERS CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/Components/kdtree/*.hpp")
+# List source files for KDTree
+file(GLOB_RECURSE KDTREE_SRC CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/Components/KDTree/*.cpp")
+file(GLOB_RECURSE KDTREE_HEADERS CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/Components/KDTree/*.hpp")
+
+# List source files for Direct
+file(GLOB_RECURSE DIRECT_SRC CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/Components/Direct/*.cpp")
+file(GLOB_RECURSE DIRECT_HEADERS CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/Components/Direct/*.hpp")
 
 # List source files for Reader
-file(GLOB_RECURSE READER_SRC CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/Components/reader/*.cpp")
-file(GLOB_RECURSE READER_HEADERS CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/Components/reader/*.hpp")
+file(GLOB_RECURSE READER_SRC CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/Components/Reader/*.cpp")
+file(GLOB_RECURSE READER_HEADERS CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/Components/Reader/*.hpp")
 
-# List source files for Point
-file(GLOB_RECURSE POINT_SRC CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/Components/point/*.cpp")
-file(GLOB_RECURSE POINT_HEADERS CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/Components/point/*.hpp")
+# List source files for Vec3D
+file(GLOB_RECURSE VEC3D_SRC CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/Components/Vec3D/*.cpp")
+file(GLOB_RECURSE VEC3D_HEADERS CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/Components/Vec3D/*.hpp")
 
 # List source files for Tester
-file(GLOB_RECURSE TESTER_SRC CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/Components/tester/*.cpp")
+file(GLOB_RECURSE TESTER_SRC CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/Components/Tester/*.cpp")
 
 # Add Google Test libraries
 add_library(gtest STATIC IMPORTED)
@@ -38,23 +42,25 @@ set_target_properties(gmock PROPERTIES
     IMPORTED_LOCATION "${CMAKE_CURRENT_LIST_DIR}/Components/googleTest/lib/libgmock.a" # Ruta a la biblioteca estática de Google Mock
 )
 
-# Create libraries for Kdtree, Reader, Point and Tester
-add_library(KDtree ${KDTREE_SRC} ${KDTREE_HEADERS})
+# Create libraries for KDTree, Direct, Reader, Vec3D and Tester
+add_library(KDTree ${KDTREE_SRC} ${KDTREE_HEADERS})
+add_library(Direct ${DIRECT_SRC} ${DIRECT_HEADERS})
 add_library(Reader ${READER_SRC} ${READER_HEADERS})
-add_library(Point ${POINT_SRC} ${POINT_HEADERS})
+add_library(Vec3D ${VEC3D_SRC} ${VEC3D_HEADERS})
 add_library(Tester ${TESTER_SRC})
 
 # Set compile definitions
 if(SILENCE_DEBUG_OUTPUT)
-    target_compile_definitions(KDtree PRIVATE "SILENCE_DEBUG")
+    target_compile_definitions(KDTree PRIVATE "SILENCE_DEBUG")
+    target_compile_definitions(Direct PRIVATE "SILENCE_DEBUG")
     target_compile_definitions(Reader PRIVATE "SILENCE_DEBUG")
-    target_compile_definitions(Point PRIVATE "SILENCE_DEBUG")
+    target_compile_definitions(Vec3D PRIVATE "SILENCE_DEBUG")
     target_compile_definitions(Tester PRIVATE "SILENCE_DEBUG")
 endif()
 
 # Link libraries as needed
 if(BUILD_EXAMPLE)
     add_executable(example "${CMAKE_CURRENT_LIST_DIR}/main.cpp")
-    target_link_libraries(example PRIVATE KDtree Reader Point Tester gtest gmock )
+    target_link_libraries(example PRIVATE KDTree Direct Reader Vec3D Tester gtest gmock )
     set_target_properties(example PROPERTIES OUTPUT_NAME "program")
 endif()

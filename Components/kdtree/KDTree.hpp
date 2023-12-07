@@ -4,18 +4,14 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
-#include "../point/Point.hpp"
+#include "../Vec3D/vec3d.hpp"
 
 struct Node
 {
-    Point data;
+    Vec3D data;
     Node *left;
     Node *right;
-    Node(Point data)
-    {
-        this->data = data;
-        left = right = NULL;
-    }
+    Node(Vec3D data) : data(data), left(NULL), right(NULL) {}
 };
 
 class KDTree
@@ -25,24 +21,20 @@ private:
     int k;
 
 public:
-    KDTree(int k)
-    {
-        root = NULL;
-        this->k = k;
-    }
-    void insert(Point data);
+    KDTree() : root(NULL), k(0) {}
+    KDTree(int k) : root(NULL), k(k) {}
+    ~KDTree() = default;
+    void insert(Vec3D data);
     void print();
-    bool search(Point data);
-    std::vector<Point> KNN(Point data, int k);
+    bool search(Vec3D data);
+    void clear();
+    std::vector<Vec3D> KNN(Vec3D data, int points);
 
 private:
-    void Insert(Node *&root, Point data, int depth);
-
+    void Insert(Node *&root, Vec3D data, int depth);
     void Print(Node *root, int depth);
-
-    bool Search(Node *root, Point data, int depth);
-
-    void KNN(Node *root, Point data, int depth, int k, std::vector<Point> &neighbours);
+    bool Search(Node *root, Vec3D data, int depth);
+    void KNN(Node *root, Vec3D data, int depth, int k, std::vector<Vec3D> &neighbours);
 };
 
 #endif // KDTREE_HPP
