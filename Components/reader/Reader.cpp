@@ -18,7 +18,7 @@ KDTree Reader::readAndConvert(int fileNumber)
     if (!file.is_open())
     {
         std::cerr << "Unable to open file " << filename << std::endl;
-        return KDTree();
+        throw std::runtime_error("Unable to open file " + filename);
     }
     KDTree kdtree(2);
     std::string line;
@@ -54,7 +54,7 @@ Direct Reader::readAndConvertDirect(int fileNumber)
     if (!file.is_open())
     {
         std::cerr << "Unable to open file " << filename << std::endl;
-        return Direct();
+        throw std::runtime_error("Unable to open file " + filename);
     }
     Direct direct;
     std::string line;

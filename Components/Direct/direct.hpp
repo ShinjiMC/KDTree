@@ -19,6 +19,6 @@ public:
     void print();
     bool search(Vec3D data);
     void clear() { points.clear(); }
-    std::vector<Vec3D> KNN(Vec3D data, int points);
+    std::vector<Vec3D> KNN(Vec3D data, int cantPoints);
 };
 #endif // DIRECT_HPP

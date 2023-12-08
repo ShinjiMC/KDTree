@@ -1,7 +1,5 @@
 #include "direct.hpp"
-#include <algorithm>
-#include <cmath>
-#include <queue>
+#include <map>
 
 void Direct::print()
 {
@@ -17,32 +15,20 @@ bool Direct::search(Vec3D data)
     return false;
 }
 
-std::vector<Vec3D> Direct::KNN(Vec3D data, int points)
+std::vector<Vec3D> Direct::KNN(Vec3D data, int cantPoints)
 {
-    std::vector<Vec3D> neighbours;
-    std::priority_queue<std::pair<double, Vec3D>> max_heap;
-    /*for (const auto &c : this->points)
+    std::multimap<double, Vec3D> distanceMap;
+    for (const auto &c : this->points)
     {
         double dist = c.distance(data);
-
-        if (max_heap.size() < points)
-        {
-            max_heap.push(std::make_pair(dist, c));
-        }
-        else
-        {
-            if (dist < max_heap.top().first)
-            {
-                max_heap.pop();
-                max_heap.push(std::make_pair(dist, c));
-            }
-        }
+        distanceMap.insert(std::make_pair(dist, c));
     }
-    while (!max_heap.empty())
+    std::vector<Vec3D> neighbours;
+    for (const auto &pair : distanceMap)
     {
-        neighbours.push_back(max_heap.top().second);
-        max_heap.pop();
-    }*/
-    std::reverse(neighbours.begin(), neighbours.end());
+        if (neighbours.size() >= cantPoints)
+            break;
+        neighbours.push_back(pair.second);
+    }
     return neighbours;
 }
