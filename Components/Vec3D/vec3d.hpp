@@ -11,6 +11,7 @@ public:
     double getX() const;
     double getY() const;
     double getZ() const;
+    double getCord(int cord) const;
     double distance(const Vec3D &other) const;
     Vec3D operator+(const Vec3D &other) const;
     Vec3D operator-(const Vec3D &other) const;
@@ -18,6 +19,7 @@ public:
     Vec3D operator/(double scalar) const;
     bool operator==(const Vec3D &other) const;
     bool operator!=(const Vec3D &other) const;
+    bool operator<(const Vec3D &other) const;
 
 private:
     double x, y, z;

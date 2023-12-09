@@ -4,7 +4,18 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <cmath>
+#include <utility>
+#include <queue>
 #include "../Vec3D/vec3d.hpp"
+
+struct CompareDist
+{
+    bool operator()(const std::pair<double, Vec3D> &a, const std::pair<double, Vec3D> &b) const
+    {
+        return a.first < b.first;
+    }
+};
 
 struct Node
 {
@@ -28,13 +39,17 @@ public:
     void print();
     bool search(Vec3D data);
     void clear();
-    std::vector<Vec3D> KNN(Vec3D data, int points);
+    std::vector<Vec3D> KNN(Vec3D data, int cantPoints);
 
 private:
     void Insert(Node *&root, Vec3D data, int depth);
     void Print(Node *root, int depth);
     bool Search(Node *root, Vec3D data, int depth);
-    void KNN(Node *root, Vec3D data, int depth, int k, std::vector<Vec3D> &neighbours);
+    void KNNRecursive(Node *node, Vec3D query, int cantPoints, std::vector<std::pair<double, Vec3D>> &queue);
+    double distance(Vec3D a, Vec3D b)
+    {
+        return std::sqrt(std::pow(a.getX() - b.getX(), 2) + std::pow(a.getY() - b.getY(), 2) + std::pow(a.getZ() - b.getZ(), 2));
+    }
 };
 
 #endif // KDTREE_HPP
