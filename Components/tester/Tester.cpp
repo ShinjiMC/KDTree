@@ -315,21 +315,21 @@ TEST_F(KDTreeTest, Insertion_KNN_MAX_PointsFromCSVTest_1)
 {
     kdtree = csv.readAndConvert(1);
     std::string filename = "../Resources/1000.csv";
-    testPointsKNN_KDTREE(filename, kdtree, 999);
+    testPointsKNN_KDTREE(filename, kdtree, 1000);
 }
 
 TEST_F(KDTreeTest, Insertion_KNN_MAX_PointsFromCSVTest_2)
 {
     kdtree = csv.readAndConvert(2);
     std::string filename = "../Resources/10000.csv";
-    testPointsKNN_KDTREE(filename, kdtree, 9999);
+    testPointsKNN_KDTREE(filename, kdtree, 10000);
 }
 
 TEST_F(KDTreeTest, Insertion_KNN_MAX_PointsFromCSVTest_3)
 {
     kdtree = csv.readAndConvert(3);
     std::string filename = "../Resources/20000.csv";
-    testPointsKNN_KDTREE(filename, kdtree, 19999);
+    testPointsKNN_KDTREE(filename, kdtree, 20000);
 }
 
 // Direct Test

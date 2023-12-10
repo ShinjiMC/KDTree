@@ -10,7 +10,7 @@ void KDTree::Insert(Node *&root, Vec3D data, int depth)
 {
     if (root == NULL)
     {
-        root = new Node(data);
+        root = new Node(data, depth);
         return;
     }
     int cd = depth % k;
@@ -39,17 +39,17 @@ void KDTree::Insert(Node *&root, Vec3D data, int depth)
 
 void KDTree::print()
 {
-    Print(root, 0);
+    Print(root);
 }
 
-void KDTree::Print(Node *root, int depth)
+void KDTree::Print(Node *root)
 {
     if (root == NULL)
         return;
-    Print(root->left, depth++);
+    Print(root->left);
     std::cout << "(" << root->data.getX() << ", " << root->data.getY() << ", " << root->data.getZ();
-    std::cout << ") Level:" << depth << std::endl;
-    Print(root->right, depth++);
+    std::cout << ") Level:" << root->depth << std::endl;
+    Print(root->right);
 }
 
 bool KDTree::search(Vec3D data)
@@ -95,42 +95,50 @@ void KDTree::clear()
 
 std::vector<Vec3D> KDTree::KNN(Vec3D data, int cantPoints)
 {
-    std::vector<std::pair<double, Vec3D>> queue;
-    queue.reserve(cantPoints);
+    std::vector<Neighbor> queue;
     KNNRecursive(root, data, cantPoints, queue);
     std::vector<Vec3D> neighbours;
-    for (const auto &pair : queue)
-        neighbours.push_back(pair.second);
+    for (auto &n : queue)
+        neighbours.push_back(n.point);
     return neighbours;
 }
 
-void KDTree::KNNRecursive(Node *node, Vec3D query, int cantPoints, std::vector<std::pair<double, Vec3D>> &queue)
+void KDTree::KNNRecursive(Node *node, Vec3D query, int cantPoints, std::vector<Neighbor> &neighbors)
 {
     if (node == nullptr)
         return;
 
     double dist = distance(node->data, query);
-    queue.emplace_back(dist, node->data);
-
-    int axis = 0;
-    if (query.getY() < node->data.getY())
-        axis = 1;
-
-    Node *firstNode = axis ? node->left : node->right;
-    Node *secondNode = axis ? node->right : node->left;
-
-    KNNRecursive(firstNode, query, cantPoints, queue);
-
-    double diff = std::fabs(query.getCord(axis) - node->data.getCord(axis));
-    if (queue.size() < cantPoints || diff < queue.back().first)
+    if (neighbors.size() < cantPoints)
     {
-        KNNRecursive(secondNode, query, cantPoints, queue);
+        neighbors.emplace_back(node->data, dist);
+        std::push_heap(neighbors.begin(), neighbors.end());
+    }
+    else if (dist < neighbors.front().distance)
+    {
+        std::pop_heap(neighbors.begin(), neighbors.end());
+        neighbors.back() = Neighbor(node->data, dist);
+        std::push_heap(neighbors.begin(), neighbors.end());
     }
 
-    if (queue.size() > cantPoints * 2)
+    int axis = node->depth % k;
+    Node *firstNode = nullptr;
+    Node *secondNode = nullptr;
+
+    if (query.getCord(axis) < node->data.getCord(axis))
     {
-        // Mantener solo los 'cantPoints' puntos más cercanos
-        std::nth_element(queue.begin(), queue.begin() + cantPoints, queue.end(), CompareDist());
-        queue.resize(cantPoints);
+        firstNode = node->left;
+        secondNode = node->right;
+    }
+    else
+    {
+        firstNode = node->right;
+        secondNode = node->left;
+    }
+
+    KNNRecursive(firstNode, query, cantPoints, neighbors);
+    if (neighbors.size() < cantPoints || std::fabs(query.getCord(axis) - node->data.getCord(axis)) < neighbors.front().distance)
+    {
+        KNNRecursive(secondNode, query, cantPoints, neighbors);
     }
 }
